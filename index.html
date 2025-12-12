@@ -24,7 +24,8 @@
     <div id="result"></div>
 
     <script>
-        let correctAnswers = 0;
+        let poeCount = 0;
+        let d4Count = 0;
         let currentQuestion = 1;
 
         const questions = [
@@ -41,7 +42,9 @@
 
         function choose(choice) {
             if (choice === 'poe') {
-                correctAnswers++;
+                poeCount++;
+            } else {
+                d4Count++;
             }
 
             currentQuestion++;
@@ -54,21 +57,6 @@
                 document.getElementById('buttons').style.display = 'none';
                 document.getElementById('question').style.display = 'none';
 
-                if (correctAnswers === 3) {
+                if (poeCount === 3) {
                     document.getElementById('result').innerHTML = `
-                        <h1>POE2BAD 😂💀</h1>
-                        <p>Gratulacje! Prawda wyszła na jaw!<br>Path of Exile 2 to totalne gówno! Wyślij to dalej! 🔥</p>
-                        <button onclick="location.reload()">Zagraj jeszcze raz</button>
-                    `;
-                } else {
-                    document.getElementById('result').innerHTML = `
-                        <h1>Niestety... nie wszystkie odpowiedzi były poprawne 😈</h1>
-                        <p>Spróbuj jeszcze raz i wybierz mądrzej!</p>
-                        <button onclick="location.reload()">Restart</button>
-                    `;
-                }
-            }
-        }
-    </script>
-</body>
-</html>
+                        <h1>POE2BAD 😂💀</h1
