@@ -57,6 +57,30 @@
                 document.getElementById('buttons').style.display = 'none';
                 document.getElementById('question').style.display = 'none';
 
-                if (poeCount === 3) {
+                if (poeCount >= 2) {
+                    // 2 lub 3 × PoE2 → POE2BAD
                     document.getElementById('result').innerHTML = `
-                        <h1>POE2BAD 😂💀</h1
+                        <h1>POE2BAD 😂💀</h1>
+                        <p>Gratulacje! Prawda wyszła na jaw!<br>Path of Exile 2 to totalne gówno! Wyślij to dalej! 🔥</p>
+                        <button onclick="location.reload()">Zagraj jeszcze raz</button>
+                    `;
+                } else if (d4Count >= 2) {
+                    // 2 lub 3 × D4 → D4 BAD D4 DOGSHIT
+                    document.getElementById('result').innerHTML = `
+                        <h1>D4 BAD D4 DOGSHIT 😂🔥</h1>
+                        <p>Gratulacje! Prawda wyszła na jaw!<br>Diablo 4 to totalne gówno! Wyślij to dalej! 💀</p>
+                        <button onclick="location.reload()">Zagraj jeszcze raz</button>
+                    `;
+                } else {
+                    // Niemożliwe w 3 pytaniach, ale na wszelki wypadek
+                    document.getElementById('result').innerHTML = `
+                        <h1>Niestety... coś poszło nie tak 😈</h1>
+                        <p>Spróbuj jeszcze raz!</p>
+                        <button onclick="location.reload()">Restart</button>
+                    `;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
