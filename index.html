@@ -3,42 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz ARPG: PoE2 vs Diablo 4</title>
+    <title>Quiz ARPG: PoE2 vs Diablo 4 - Rozbudowana Edycja 🔥</title>
     <style>
-        body { font-family: Arial, sans-serif; background: linear-gradient(to right, #228B22, #8B0000); color: white; text-align: center; padding: 50px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(to right, #228B22, #8B0000); 
+            color: white; 
+            text-align: center; 
+            padding: 20px; 
+            margin: 0;
+        }
         h1 { font-size: 2.5em; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
-        button { background: #FFD700; color: black; border: none; padding: 15px 30px; margin: 10px; font-size: 1.2em; border-radius: 10px; cursor: pointer; transition: all 0.3s; }
+        h2 { font-size: 2em; }
+        input[type="text"] { 
+            padding: 15px; 
+            font-size: 1.2em; 
+            border: none; 
+            border-radius: 10px; 
+            width: 300px; 
+            margin: 10px; 
+        }
+        button { 
+            background: #FFD700; 
+            color: black; 
+            border: none; 
+            padding: 15px 30px; 
+            margin: 10px; 
+            font-size: 1.2em; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+        }
         button:hover { background: #FFA500; transform: scale(1.05); }
+        button:disabled { background: #666; cursor: not-allowed; transform: none; }
         #result { font-size: 3em; margin-top: 50px; text-shadow: 3px 3px 6px rgba(0,0,0,0.9); }
         .question { font-size: 1.5em; margin: 30px 0; }
         #buttons { margin: 40px 0; }
+        #leaderboard { 
+            background: rgba(0,0,0,0.5); 
+            border-radius: 15px; 
+            padding: 20px; 
+            margin: 20px auto; 
+            max-width: 500px; 
+            font-size: 1.2em; 
+        }
+        #leaderboard h3 { margin-top: 0; }
+        .leaderboard-entry { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 10px; 
+            border-bottom: 1px solid #ccc; 
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        #progress { font-size: 1.2em; margin: 20px 0; }
     </style>
 </head>
 <body>
-    <h1>🔥 QUIZ: Bitwa ARPG! 🔥</h1>
-    <p class="question" id="question">Pytanie 1/3: Która gra ma lepszy balans klas?</p>
-    <div id="buttons">
-        <button id="poeBtn">Path of Exile 2 💀</button>
-        <button id="d4Btn">Diablo 4 🔥</button>
+    <!-- Ekran startowy -->
+    <div id="startScreen" class="screen active">
+        <h1>🔥 QUIZ ARPG: Bitwa PoE2 vs D4 🔥</h1>
+        <h2>Rozbudowana edycja z leaderboardem!</h2>
+        <p>Wpisz swoją ksywę i walcz o top miejsc!</p>
+        <input type="text" id="playerName" placeholder="Twoja ksywka..." maxlength="20">
+        <br>
+        <button onclick="startQuiz()">START QUIZU 💀🔥</button>
+        <br><br>
+        <button onclick="showLeaderboard()">Zobacz Leaderboard 🏆</button>
     </div>
-    <div id="result"></div>
 
-    <script>po
+    <!-- Ekran quizu -->
+    <div id="quizScreen" class="screen">
+        <h1 id="quizTitle">🔥 QUIZ: Bitwa ARPG! 🔥</h1>
+        <div id="progress">Pytanie <span id="currentQ">1</span>/7</div>
+        <p class="question" id="question">Ładuję...</p>
+        <div id="buttons">
+            <button id="poeBtn">Path of Exile 2 💀</button>
+            <button id="d4Btn">Diablo 4 🔥</button>
+        </div>
+    </div>
+
+    <!-- Ekran wyniku -->
+    <div id="resultScreen" class="screen">
+        <div id="result"></div>
+        <button onclick="showStart()">Graj jeszcze raz</button>
+        <button onclick="showLeaderboard()">Leaderboard 🏆</button>
+    </div>
+
+    <!-- Ekran leaderboard -->
+    <div id="leaderboardScreen" class="screen">
+        <h1>🏆 TOP GRACZE ARPG TROLLA 🏆</h1>
+        <div id="leaderboard"></div>
+        <button onclick="showStart()">Powrót do menu</button>
+    </div>
+
+    <script>
         let poeCount = 0;
         let d4Count = 0;
         let currentQuestion = 1;
+        let playerName = '';
 
         const questions = [
-            "Pytanie 1/3: Która gra ma lepszy balans klas?",
-            "Pytanie 2/3: Która gra jest bardziej grindy i frustrująca?",
-            "Pytanie 3/3: Która gra zasługuje na miano 'bad' w 2025?"
+            "Pytanie 1/7: Która gra ma lepszy balans klas?",
+            "Pytanie 2/7: Która gra jest bardziej grindy i frustrująca?",
+            "Pytanie 3/7: Która gra zasługuje na miano 'bad' w 2025?",
+            "Pytanie 4/7: Która ma lepszy endgame?",
+            "Pytanie 5/7: Która jest bardziej pay-to-win?",
+            "Pytanie 6/7: Która ma brzydsze modele postaci?",
+            "Pytanie 7/7: Która gra zasłużyła na największe memy w community?"
         ];
 
-        const poeTexts = ["Path of Exile 2 💀", "PoE2 💀", "PoE2 💀"];
-        const d4Texts = ["Diablo 4 🔥", "Diablo 4 🔥", "Diablo 4 🔥"];
+        const poeTexts = [
+            "Path of Exile 2 💀", "PoE2 💀", "PoE2 💀", "PoE2 💀", 
+            "PoE2 💀", "PoE2 💀", "PoE2 💀"
+        ];
+        const d4Texts = [
+            "Diablo 4 🔥", "Diablo 4 🔥", "Diablo 4 🔥", "Diablo 4 🔥", 
+            "Diablo 4 🔥", "Diablo 4 🔥", "Diablo 4 🔥"
+        ];
 
-        document.getElementById('poeBtn').onclick = function() { choose('poe'); };
-        document.getElementById('d4Btn').onclick = function() { choose('d4'); };
+        // Inicjalizacja przycisków
+        function initButtons() {
+            document.getElementById('poeBtn').onclick = function() { choose('poe'); };
+            document.getElementById('d4Btn').onclick = function() { choose('d4'); };
+        }
+
+        function startQuiz() {
+            playerName = document.getElementById('playerName').value.trim() || 'Anonim';
+            if (playerName) {
+                poeCount = 0;
+                d4Count = 0;
+                currentQuestion = 1;
+                showScreen('quizScreen');
+                nextQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            document.getElementById('question').innerHTML = questions[currentQuestion - 1];
+            document.getElementById('poeBtn').innerHTML = poeTexts[currentQuestion - 1];
+            document.getElementById('d4Btn').innerHTML = d4Texts[currentQuestion - 1];
+            document.getElementById('currentQ').innerHTML = currentQuestion;
+        }
 
         function choose(choice) {
             if (choice === 'poe') {
@@ -48,39 +154,85 @@
             }
 
             currentQuestion++;
-            if (currentQuestion <= 3) {
-                document.getElementById('question').innerHTML = questions[currentQuestion - 1];
-                document.getElementById('poeBtn').innerHTML = poeTexts[currentQuestion - 1];
-                document.getElementById('d4Btn').innerHTML = d4Texts[currentQuestion - 1];
+            if (currentQuestion <= 7) {
+                nextQuestion();
             } else {
-                // Koniec quizu
-                document.getElementById('buttons').style.display = 'none';
-                document.getElementById('question').style.display = 'none';
-
-                if (poeCount >= 2) {
-                    // 2 lub 3 × PoE2 → POE2BAD
-                    document.getElementById('result').innerHTML = `
-                        <h1>POE2BAD 😂💀</h1>
-                        <p>Gratulacje! Prawda wyszła na jaw!<br>Path of Exile 2 to totalne gówno! Wyślij to dalej! 🔥</p>
-                        <button onclick="location.reload()">Zagraj jeszcze raz</button>
-                    `;
-                } else if (d4Count >= 2) {
-                    // 2 lub 3 × D4 → D4 BAD D4 DOGSHIT
-                    document.getElementById('result').innerHTML = `
-                        <h1>D4 BAD D4 DOGSHIT 😂🔥</h1>
-                        <p>Gratulacje! Prawda wyszła na jaw!<br>Diablo 4 to totalne gówno! Wyślij to dalej! 💀</p>
-                        <button onclick="location.reload()">Zagraj jeszcze raz</button>
-                    `;
-                } else {
-                    // Niemożliwe w 3 pytaniach, ale na wszelki wypadek
-                    document.getElementById('result').innerHTML = `
-                        <h1>Niestety... coś poszło nie tak 😈</h1>
-                        <p>Spróbuj jeszcze raz!</p>
-                        <button onclick="location.reload()">Restart</button>
-                    `;
-                }
+                showResult();
             }
         }
+
+        function showResult() {
+            showScreen('resultScreen');
+            let resultHtml = '';
+            let score = Math.max(poeCount, d4Count); // Max streak dla leaderboardu
+
+            if (poeCount >= 4) { // Majority PoE2 (4+ z 7)
+                resultHtml = `
+                    <h1>POE2BAD 😂💀</h1>
+                    <p><strong>${playerName}</strong>, Twój wynik: ${poeCount}/7 dla PoE2!<br>
+                    Path of Exile 2 to totalne gówno! Wyślij dalej! 🔥</p>
+                `;
+            } else if (d4Count >= 4) { // Majority D4
+                resultHtml = `
+                    <h1>D4 BAD D4 DOGSHIT 😂🔥</h1>
+                    <p><strong>${playerName}</strong>, Twój wynik: ${d4Count}/7 dla D4!<br>
+                    Diablo 4 to totalne gówno! Wyślij dalej! 💀</p>
+                `;
+            } else {
+                resultHtml = `
+                    <h1>Remis? 😈</h1>
+                    <p><strong>${playerName}</strong>, mieszane uczucia: ${poeCount} PoE2 vs ${d4Count} D4.<br>
+                    Spróbuj być bardziej konsekwentny!</p>
+                `;
+            }
+
+            resultHtml += `<p>Twój max streak: ${score}/7 🏆</p>`;
+            document.getElementById('result').innerHTML = resultHtml;
+
+            // Zapisz do leaderboardu (localStorage)
+            saveToLeaderboard(playerName, score);
+        }
+
+        function saveToLeaderboard(name, score) {
+            let leaderboard = JSON.parse(localStorage.getItem('arpgLeaderboard') || '[]');
+            leaderboard.push({ name, score, date: new Date().toLocaleDateString('pl-PL') });
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 10); // Top 10
+            localStorage.setItem('arpgLeaderboard', JSON.stringify(leaderboard));
+        }
+
+        function showLeaderboard() {
+            let leaderboard = JSON.parse(localStorage.getItem('arpgLeaderboard') || '[]');
+            let html = '<div id="leaderboardList">';
+            if (leaderboard.length === 0) {
+                html += '<p>Brak wyników! Bądź pierwszy! 🏆</p>';
+            } else {
+                leaderboard.forEach((entry, index) => {
+                    html += `
+                        <div class="leaderboard-entry">
+                            <span>#${index + 1} ${entry.name}</span>
+                            <span>${entry.score}/7 (${entry.date})</span>
+                        </div>
+                    `;
+                });
+            }
+            html += '</div>';
+            document.getElementById('leaderboard').innerHTML = html;
+            showScreen('leaderboardScreen');
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function showStart() {
+            document.getElementById('playerName').value = '';
+            showScreen('startScreen');
+        }
+
+        // Inicjalizacja
+        initButtons();
     </script>
 </body>
 </html>
